@@ -1,14 +1,16 @@
-# News Summarizer Agent
+# CrispCast - News Summarizer Agent
 
 A full-stack application that summarizes news articles using advanced NLP models. The project consists of a Python backend for news fetching, summarization, and a React frontend for user interaction.
 
 ## Features
+
 - Fetch news from various sources (APIs, web scraping)
 - Summarize news articles using HuggingFace models
 - Date-based news selection
 - Responsive and modern UI
 
 ## Project Structure
+
 ```
 backend/
   main.py                # Backend entry point
@@ -28,6 +30,7 @@ frontend/
 ## Getting Started
 
 ### Backend
+
 1. Navigate to `backend/`:
    ```sh
    cd backend
@@ -42,6 +45,7 @@ frontend/
    ```
 
 ### Frontend
+
 1. Navigate to `frontend/`:
    ```sh
    cd frontend
@@ -56,12 +60,15 @@ frontend/
    ```
 
 ## Usage
+
 - Open the frontend in your browser (usually at `http://localhost:5173`)
 - Select a date and view summarized news articles
 
 ## Requirements
+
 - Python 3.8+
 - Node.js 16+
 
 ## License
+
 MIT License
