@@ -1,12 +1,25 @@
 import React from "react";
-import "./Loader.css"; // optional spinner styling
+import { Spinner, Container, Row, Col } from "react-bootstrap";
+import "./Loader.css";
 
 const Loader = () => {
   return (
-    <div className="loader">
-      <div className="spinner"></div>
-      <p>Loading news...</p>
-    </div>
+    <Container className="text-center py-5 loader-container">
+      <Row className="justify-content-center">
+        <Col xs={12} md={8} lg={6}>
+          <Spinner
+            animation="border"
+            variant="primary"
+            role="status"
+            className="custom-spinner"
+          />
+          <p className="loading-text mt-3">Fetching latest news summaries...</p>
+          <p className="loading-subtext">
+            This may take a few moments as we're processing articles with AI
+          </p>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

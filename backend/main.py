@@ -43,29 +43,52 @@ def get_news(date: str = Query(..., description="Date in YYYY-MM-DD format")):
     Fetch and summarize top news for a given date.
     Example: /news?date=2025-09-01
     """
-    # Call NewsAPI with date
-    url = f"https://newsapi.org/v2/everything?q=top&from={date}&to={date}&sortBy=popularity&apiKey={API_KEY}"
-    response = requests.get(url)
-
-    if response.status_code != 200:
-        raise HTTPException(status_code=500, detail="Failed to fetch news")
-
-    articles = response.json().get("articles", [])
-    if not articles:
-        return []
-
-    digest = []
-    for a in articles[:10]:  # summarize top 5
-        content = a.get("content") or a.get("description") or a.get("title")
-        if content:
+    try:
+        # Call NewsAPI with date
+        url = f"https://newsapi.org/v2/everything?q=top&from={date}&to={date}&sortBy=popularity&apiKey={API_KEY}"
+        print(f"Requesting news for date: {date}")
+        response = requests.get(url, timeout=10)
+        
+        if response.status_code != 200:
+            error_msg = f"NewsAPI error: {response.status_code}"
             try:
-                summary = summarizer(content, max_length=60, min_length=20, do_sample=False)[0]["summary_text"]
-            except Exception:
-                summary = content  # fallback if summarizer fails
-            digest.append({
-                "title": a["title"],
-                "summary": summary,
-                "url": a["url"]
-            })
+                error_msg += f" - {response.json().get('message', 'Unknown error')}"
+            except:
+                pass
+            print(f"API Error: {error_msg}")
+            raise HTTPException(status_code=response.status_code, detail=error_msg)
+
+        data = response.json()
+        articles = data.get("articles", [])
+        
+        if not articles:
+            print(f"No articles found for date: {date}")
+            return []
+            
+        print(f"Found {len(articles)} articles, processing top 10")
+        digest = []
+        
+        for a in articles[:10]:  # summarize top 10
+            content = a.get("content") or a.get("description") or a.get("title")
+            if content:
+                try:
+                    summary = summarizer(content, max_length=60, min_length=20, do_sample=False)[0]["summary_text"]
+                    print(f"Summarized article: {a['title'][:30]}...")
+                except Exception as e:
+                    print(f"Summarization error: {str(e)[:100]}")
+                    summary = content[:200] + "..."  # fallback if summarizer fails
+                digest.append({
+                    "title": a["title"],
+                    "summary": summary,
+                    "url": a["url"]
+                })
+                
+    except HTTPException as he:
+        # Re-raise HTTP exceptions
+        raise he
+    except Exception as e:
+        error_message = f"Error processing news: {str(e)}"
+        print(error_message)
+        raise HTTPException(status_code=500, detail=error_message)
 
     return digest
